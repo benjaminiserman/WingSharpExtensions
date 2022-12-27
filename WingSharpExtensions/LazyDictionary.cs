@@ -1,10 +1,18 @@
 ﻿namespace WingSharpExtensions;
 
+using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
-public class LazyDictionary<T1, T2> : IDictionary<T1, T2>
+public class LazyDictionary<T1, T2> : IDictionary<T1, T2> 
+	where T1: notnull
 {
-	private Dictionary<T1, T2> _internalDictionary = new();
+	private readonly Dictionary<T1, T2> _internalDictionary = new();
+
+	public LazyDictionary(Dictionary<T1, T2> dictionary)
+	{
+		_internalDictionary = dictionary;
+	}
 
 	public T2 this[T1 key] 
 	{
