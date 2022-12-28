@@ -4,13 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-internal class SliceList<T> : List<T>
+public class SliceList<T> : List<T>
 {
-	public IList<T> this[Range r]
+	public SliceList(IEnumerable<T> enumerable) : base(enumerable) { }
+	public SliceList() : base() { }
+
+	public SliceList<T> this[Range r]
 	{
 		get
 		{
-			var slice = new List<T>();
+			var slice = new SliceList<T>();
 			foreach (var index in r)
 			{
 				slice.Add(this[index]);
@@ -24,19 +27,32 @@ internal class SliceList<T> : List<T>
 			var start = Math.Min(r.Start.Value, r.End.Value);
 			var end = Math.Max(r.Start.Value, r.End.Value);
 
-			var list = this.Take(start).ToList();
-			if (r.Start.Value <= r.End.Value)
+			if (start < 0 || start >= this.Count)
 			{
-				foreach (var x in value)
-				{
-					list.Add(x);
-				}
+				throw new ArgumentOutOfRangeException(nameof(r), start, $"Range start is out of bounds.");
 			}
-			else
+
+			if (end < 0 || end >= this.Count)
 			{
-				foreach (var x in value.Reverse())
+				throw new ArgumentOutOfRangeException(nameof(r), end, $"Range end is out of bounds.");
+			}
+
+			var list = new SliceList<T>(this.Take(start));
+			if (value is not null)
+			{
+				if (r.Start.Value <= r.End.Value)
 				{
-					list.Add(x);
+					foreach (var x in value)
+					{
+						list.Add(x);
+					}
+				}
+				else
+				{
+					foreach (var x in ((IEnumerable<T>)value).Reverse())
+					{
+						list.Add(x);
+					}
 				}
 			}
 
