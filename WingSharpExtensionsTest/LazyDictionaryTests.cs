@@ -14,6 +14,8 @@ public class LazyDictionaryTests
 	{
 		Assert.AreEqual(dictionary.Count, lazyDictionary.Count);
 
+		Assert.AreEqual(dictionary.Comparer, lazyDictionary.Comparer);
+
 		foreach (var kvp in dictionary)
 		{
 			Assert.IsTrue(lazyDictionary.ContainsKey(kvp.Key));
@@ -225,6 +227,73 @@ public class LazyDictionaryTests
 
 		Assert.AreEqual(dictionary.TryGetValue(key, out var dictionaryValue), lazyDictionary.TryGetValue(key, out var lazyDictionaryValue));
 		Assert.AreEqual(dictionaryValue, lazyDictionaryValue);
+	}
+	#endregion
+
+	#region ExtensionMethods
+	[TestMethod]
+	public void ToLazyDictionary_CorrectResult()
+	{
+		GetTestDictionaries(out var dictionary, out _);
+		var lazyDictionary = dictionary.ToLazyDictionary();
+
+		AssertDictionariesAreEqual(dictionary, lazyDictionary);
+	}
+
+	[TestMethod]
+	public void ToLazyDictionary_WithKeySelectorAndComparer_CorrectResult()
+	{
+		Func<int, string> keySelector = x => x.ToString();
+		var comparer = EqualityComparer<string>.Default;
+
+		var enumerable = Enumerable.Range(0, 10);
+
+		var dictionary = enumerable.ToDictionary(keySelector, comparer);
+		var lazyDictionary = enumerable.ToLazyDictionary(keySelector, comparer);
+
+		AssertDictionariesAreEqual(dictionary, lazyDictionary);
+	}
+
+	[TestMethod]
+	public void ToLazyDictionary_WithKeySelector_CorrectResult()
+	{
+		Func<int, string> keySelector = x => x.ToString();
+
+		var enumerable = Enumerable.Range(0, 10);
+
+		var dictionary = enumerable.ToDictionary(keySelector);
+		var lazyDictionary = enumerable.ToLazyDictionary(keySelector);
+
+		AssertDictionariesAreEqual(dictionary, lazyDictionary);
+	}
+
+	[TestMethod]
+	public void ToLazyDictionary_WithKeyAndElementSelectors_CorrectResult()
+	{
+		Func<int, string> keySelector = x => x.ToString();
+		Func<int, int> elementSelector = x => x * 2;
+
+		var enumerable = Enumerable.Range(0, 10);
+
+		var dictionary = enumerable.ToDictionary(keySelector, elementSelector);
+		var lazyDictionary = enumerable.ToLazyDictionary(keySelector, elementSelector);
+
+		AssertDictionariesAreEqual(dictionary, lazyDictionary);
+	}
+
+	[TestMethod]
+	public void ToLazyDictionary_WithKeyAndElementSelectorsAndComparer_CorrectResult()
+	{
+		Func<int, string> keySelector = x => x.ToString();
+		Func<int, int> elementSelector = x => x * 2;
+		var comparer = EqualityComparer<string>.Default;
+
+		var enumerable = Enumerable.Range(0, 10);
+
+		var dictionary = enumerable.ToDictionary(keySelector, elementSelector, comparer);
+		var lazyDictionary = enumerable.ToLazyDictionary(keySelector, elementSelector, comparer);
+
+		AssertDictionariesAreEqual(dictionary, lazyDictionary);
 	}
 	#endregion
 }
