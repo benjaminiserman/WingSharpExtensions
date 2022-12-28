@@ -119,6 +119,49 @@ public class HashListTests
 	}
 
 	[TestMethod]
+	public void TrySet_VerifyNoDuplicatesAndOrderingPreserved()
+	{
+		var n = 10;
+		var set = GetRandomList(n).ToHashSet();
+		var list = set.ToList();
+		var hashlist = new HashList<int>(list);
+
+		var listResults = new List<bool>();
+		var hashlistResults = new List<bool>();
+
+		Console.WriteLine($"list: {string.Join(", ", list)}");
+		Console.WriteLine($"hashlist: {string.Join(", ", hashlist)}");
+
+		foreach (var _ in Enumerable.Range(0, 100))
+		{
+			var index = Random.Shared.Next(0, list.Count);
+			var number = Random.Shared.Next(0, 100);
+			
+			hashlistResults.Add(hashlist.TrySet(index, number));
+
+			if (set.Contains(number))
+			{
+				listResults.Add(false);
+			}
+			else
+			{
+				set.Remove(list[index]);
+				list[index] = number;
+				listResults.Add(true);
+				set.Add(number);
+			}
+
+			Assert.AreEqual(list[index], hashlist[index], $"i: {index}, num: {number}, list: {listResults[^1]}, hashlist: {hashlistResults[^1]}\nlist: {string.Join(", ", list)}\nhashlist: {string.Join(", ", hashlist)}");
+		}
+
+		AssertListsMatch(list, hashlist);
+		foreach (var (listResult, hashlistResult) in listResults.Zip(hashlistResults))
+		{
+			Assert.AreEqual(listResult, hashlistResult);
+		}
+	}
+
+	[TestMethod]
 	public void Remove_OrderingPreserved()
 	{
 		var set = GetRandomList(100).ToHashSet();
