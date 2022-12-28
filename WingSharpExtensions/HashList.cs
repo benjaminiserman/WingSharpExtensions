@@ -3,7 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, IReadOnlySet<T>
+public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, IReadOnlySet<T>, IEnumerable<T>
 {
 	private readonly List<T> _internalList = new();
 	private readonly HashSet<T> _internalSet = new();
@@ -23,7 +23,7 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 
 	public T this[int index]
 	{ 
-		get => ((IList<T>)_internalList)[index]; 
+		get => _internalList[index]; 
 		set
 		{
 			_internalSet.Remove(_internalList[index]);
