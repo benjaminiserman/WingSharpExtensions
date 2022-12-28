@@ -10,7 +10,9 @@ public class LazyDictionary<T1, T2> : IDictionary<T1, T2>
 	private readonly Dictionary<T1, T2> _internalDictionary = new();
 
 	public Func<T2>? GetDefault { get; init; } = null;
+	public bool AddMissingKeys { get; init; } = false;
 
+	public LazyDictionary() { }
 	public LazyDictionary(Dictionary<T1, T2> dictionary)
 	{
 		_internalDictionary = dictionary;
@@ -33,7 +35,11 @@ public class LazyDictionary<T1, T2> : IDictionary<T1, T2>
 				else
 				{
 					var newValue = GetDefault();
-					_internalDictionary.Add(key, newValue);
+					if (AddMissingKeys)
+					{
+						_internalDictionary.Add(key, newValue);
+					}
+
 					return newValue;
 				}
 			}
