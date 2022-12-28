@@ -15,7 +15,7 @@ public static class AnyOutExtension
 		}
 		else
 		{
-			found = default;
+			found = default!;
 			return false;
 		}
 	}
@@ -29,7 +29,7 @@ public static class AnyOutExtension
 		}
 		else
 		{
-			found = default;
+			found = default!;
 			return false;
 		}
 	}
