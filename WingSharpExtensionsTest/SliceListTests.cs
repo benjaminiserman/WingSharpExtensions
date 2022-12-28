@@ -156,19 +156,59 @@ public class SliceListTests
 	{
 		var list = GetTestList();
 
-		var start = Random.Shared.Next(1, list.Count + 1);
-		var end = start;
+		var end = Random.Shared.Next(0, list.Count);
+		var start = end;
 		var replaceSlice = new SliceList<int>() { -1, -2, -3 };
 
-		while (end == start)
+		while (start == end)
 		{
-			end = Random.Shared.Next(0, list.Count);
+			start = Random.Shared.Next(0, list.Count);
 		}
 
 		if (start < end)
 		{
 			(start, end) = (end, start);
 		}
+
+		var slice = new SliceList<int>(list);
+		Console.WriteLine($"slice: [{start}..{end}]");
+		Console.WriteLine($"before: {{ {string.Join(", ", slice)} }}");
+		slice[start..end] = replaceSlice;
+		Console.WriteLine($"after: {{ {string.Join(", ", slice)} }}");
+
+		Assert.AreEqual(list.Count - Math.Abs(end - start) + replaceSlice.Count, slice.Count);
+
+		foreach (var (listValue, sliceValue) in list
+			.Take(end)
+			.Zip(slice.Take(end)))
+		{
+			Assert.AreEqual(listValue, sliceValue);
+		}
+
+		foreach (var (listValue, sliceValue) in slice
+			.Skip(end + 1)
+			.Take(replaceSlice.Count)
+			.Zip(((IEnumerable<int>)replaceSlice).Reverse()))
+		{
+			Assert.AreEqual(listValue, sliceValue);
+		}
+
+		foreach (var (listValue, sliceValue) in list
+			.TakeLast(list.Count - start - 1)
+			.Zip(slice.TakeLast(list.Count - start - 1)))
+		{
+			Assert.AreEqual(listValue, sliceValue);
+		}
+	}
+
+	[TestMethod]
+	public void IndexerSet_ReverseRangeAtEnd_CorrectResult()
+	{
+		var list = GetTestList();
+
+		var start = 9;
+		var end = 8;
+		var replaceSlice = new SliceList<int>() { -1, -2, -3 };
 
 		var slice = new SliceList<int>(list);
 		Console.WriteLine($"slice: [{start}..{end}]");

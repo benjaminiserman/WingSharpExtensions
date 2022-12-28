@@ -24,45 +24,68 @@ public class SliceList<T> : List<T>, IEnumerable<T>
 
 		set
 		{
-			var start = Math.Min(r.Start.Value, r.End.Value);
-			var end = Math.Max(r.Start.Value, r.End.Value);
+			var start = r.Start.Value;
+			var end = r.End.Value;
 
-			if (r.Start.Value > r.End.Value)
+			if (Math.Max(start, end) < 0 
+				|| Math.Min(start, end) >= this.Count
+				|| start <= -1
+				|| end <= -1
+				|| start > this.Count
+				|| end > this.Count)
 			{
-				start++;
-				end++;
+				throw new ArgumentOutOfRangeException(nameof(r), start, $"Range start or end is out of bounds.");
 			}
 
-			if (start < 0 || start >= this.Count)
+			SliceList<T> list;
+			if (start <= end)
 			{
-				throw new ArgumentOutOfRangeException(nameof(r), start, $"Range start is out of bounds.");
-			}
-
-			if (end < 0 || end >= this.Count)
-			{
-				throw new ArgumentOutOfRangeException(nameof(r), end, $"Range end is out of bounds.");
-			}
-
-			var list = new SliceList<T>(this.Take(start));
-			if (value is not null)
-			{
-				if (r.Start.Value <= r.End.Value)
+				list = new SliceList<T>(this.Take(start));
+				if (value is not null)
 				{
-					foreach (var x in value)
+					if (r.Start.Value <= r.End.Value)
 					{
-						list.Add(x);
+						foreach (var x in value)
+						{
+							list.Add(x);
+						}
+					}
+					else
+					{
+						foreach (var x in ((IEnumerable<T>)value).Reverse())
+						{
+							list.Add(x);
+						}
 					}
 				}
-				else
+
+				list.AddRange(this.TakeLast(this.Count - end));
+			}
+			else
+			{
+				list = new SliceList<T>(this.Take(end + 1));
+				if (value is not null)
 				{
-					foreach (var x in ((IEnumerable<T>)value).Reverse())
+					if (r.Start.Value <= r.End.Value)
 					{
-						list.Add(x);
+						foreach (var x in value)
+						{
+							list.Add(x);
+						}
+					}
+					else
+					{
+						foreach (var x in ((IEnumerable<T>)value).Reverse())
+						{
+							list.Add(x);
+						}
 					}
 				}
+
+				list.AddRange(this.TakeLast(this.Count - start - 1));
 			}
 
-			list.AddRange(this.TakeLast(this.Count - end));
+			
 
 			this.Clear();
 			this.AddRange(list);
