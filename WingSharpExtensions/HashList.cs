@@ -1,7 +1,9 @@
 ﻿namespace WingSharpExtensions;
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, IReadOnlySet<T>, IEnumerable<T>
 {
@@ -26,6 +28,11 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 		get => _internalList[index];
 		set
 		{
+			if (_internalSet.Contains(value))
+			{
+				throw new InvalidOperationException($"Cannot set value because value already exists in HashList.");
+			}
+
 			_internalSet.Remove(_internalList[index]);
 			_internalSet.Add(value);
 
@@ -42,14 +49,7 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 	/// Adds an object to the end of the <see cref="HashList{T}"/>, if that item is not already within the list.
 	/// </summary>
 	/// <param name="item">The object to be added to the end of the <see cref="HashList{T}"/>. The value can be null for reference types.</param>
-	void ICollection<T>.Add(T item)
-	{
-		if (!_internalSet.Contains(item))
-		{
-			_internalList.Add(item);
-			_internalSet.Add(item);
-		}
-	}
+	void ICollection<T>.Add(T item) => Add(item);
 
 	public void Clear()
 	{
@@ -116,14 +116,34 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 
 		return false;
 	}
-	public void ExceptWith(IEnumerable<T> other) => _internalSet.ExceptWith(other);
-	public void IntersectWith(IEnumerable<T> other) => _internalSet.IntersectWith(other);
+	public void ExceptWith(IEnumerable<T> other)
+	{
+		_internalSet.ExceptWith(other);
+		_internalList.RemoveAll(x => !_internalSet.Contains(x));
+	}
+	public void IntersectWith(IEnumerable<T> other)
+	{
+		_internalSet.IntersectWith(other);
+		_internalList.RemoveAll(x => !_internalSet.Contains(x));
+	}
+
 	public bool IsProperSubsetOf(IEnumerable<T> other) => _internalSet.IsProperSubsetOf(other);
 	public bool IsProperSupersetOf(IEnumerable<T> other) => _internalSet.IsProperSupersetOf(other);
 	public bool IsSubsetOf(IEnumerable<T> other) => _internalSet.IsSubsetOf(other);
 	public bool IsSupersetOf(IEnumerable<T> other) => _internalSet.IsSupersetOf(other);
 	public bool Overlaps(IEnumerable<T> other) => _internalSet.Overlaps(other);
 	public bool SetEquals(IEnumerable<T> other) => _internalSet.SetEquals(other);
-	public void SymmetricExceptWith(IEnumerable<T> other) => _internalSet.SymmetricExceptWith(other);
-	public void UnionWith(IEnumerable<T> other) => _internalSet.UnionWith(other);
+	public void SymmetricExceptWith(IEnumerable<T> other)
+	{
+		var toAdd = other.Where(x => !_internalSet.Contains(x)).ToList(); // $$$ this should probably be optimized
+		_internalSet.SymmetricExceptWith(other);
+		_internalList.RemoveAll(x => !_internalSet.Contains(x));
+		_internalList.AddRange(toAdd);
+	}
+
+	public void UnionWith(IEnumerable<T> other)
+	{
+		_internalList.AddRange(other.Where(x => !_internalSet.Contains(x)));
+		_internalSet.UnionWith(other);
+	}
 }
