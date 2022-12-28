@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class SliceList<T> : List<T>
+public class SliceList<T> : List<T>, IEnumerable<T>
 {
 	public SliceList(IEnumerable<T> enumerable) : base(enumerable) { }
 	public SliceList() : base() { }
@@ -26,6 +26,12 @@ public class SliceList<T> : List<T>
 		{
 			var start = Math.Min(r.Start.Value, r.End.Value);
 			var end = Math.Max(r.Start.Value, r.End.Value);
+
+			if (r.Start.Value > r.End.Value)
+			{
+				start++;
+				end++;
+			}
 
 			if (start < 0 || start >= this.Count)
 			{
