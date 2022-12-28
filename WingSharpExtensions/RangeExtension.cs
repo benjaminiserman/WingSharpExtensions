@@ -2,12 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 public static class RangeExtension
 {
-    private static IEnumerator<int> RangeEnumerator(int start, int end)
-    {
+	private static IEnumerator<int> RangeEnumerator(int start, int end)
+	{
 		foreach (var x in Range(start, end))
 		{
 			yield return x;
@@ -36,10 +35,10 @@ public static class RangeExtension
 
 
 	public static IEnumerable<int> Enumerate(this Range range)
-    {
-        foreach (var x in range)
-        {
-            yield return x;
-        }
-    }
+	{
+		foreach (var x in range)
+		{
+			yield return x;
+		}
+	}
 }
