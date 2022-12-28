@@ -1,6 +1,7 @@
 ﻿namespace WingSharpExtensionsTest;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WingSharpExtensions;
@@ -8,7 +9,7 @@ using WingSharpExtensions;
 [TestClass]
 public class SliceListTests
 {
-	private SliceList<int> GetTestList() => new(Enumerable.Range(0, 10));
+	private static SliceList<int> GetTestList() => new(Enumerable.Range(0, 10));
 
 	#region IndexerGet
 	[TestMethod]
@@ -93,7 +94,6 @@ public class SliceListTests
 	}
 	#endregion
 
-
 	#region IndexerSet
 	[TestMethod]
 	public void IndexerSet_CorrectResult()
@@ -109,13 +109,24 @@ public class SliceListTests
 			end = Random.Shared.Next(0, list.Count);
 		}
 
+		if (start > end)
+		{
+			(start, end) = (end, start);
+		}
+
 		var slice = new SliceList<int>(list);
 		Console.WriteLine($"slice: [{start}..{end}]");
 		Console.WriteLine($"before: {{ {string.Join(", ", slice)} }}");
 		slice[start..end] = replaceSlice;
 		Console.WriteLine($"after: {{ {string.Join(", ", slice)} }}");
 
-		Assert.AreEqual(list.Count - (end - start) + replaceSlice.Count, slice.Count);
+		if (start > end)
+		{
+			start++;
+			end++;
+		}
+
+		Assert.AreEqual(list.Count - Math.Abs(end - start) + replaceSlice.Count, slice.Count);
 
 		foreach (var (listValue, sliceValue) in list
 			.Take(start)
@@ -141,6 +152,56 @@ public class SliceListTests
 	}
 
 	[TestMethod]
+	public void IndexerSet_ReverseRange_CorrectResult()
+	{
+		var list = GetTestList();
+
+		var start = Random.Shared.Next(1, list.Count + 1);
+		var end = start;
+		var replaceSlice = new SliceList<int>() { -1, -2, -3 };
+
+		while (end == start)
+		{
+			end = Random.Shared.Next(0, list.Count);
+		}
+
+		if (start < end)
+		{
+			(start, end) = (end, start);
+		}
+
+		var slice = new SliceList<int>(list);
+		Console.WriteLine($"slice: [{start}..{end}]");
+		Console.WriteLine($"before: {{ {string.Join(", ", slice)} }}");
+		slice[start..end] = replaceSlice;
+		Console.WriteLine($"after: {{ {string.Join(", ", slice)} }}");
+
+		Assert.AreEqual(list.Count - Math.Abs(end - start) + replaceSlice.Count, slice.Count);
+
+		foreach (var (listValue, sliceValue) in list
+			.Take(end)
+			.Zip(slice.Take(end)))
+		{
+			Assert.AreEqual(listValue, sliceValue);
+		}
+
+		foreach (var (listValue, sliceValue) in slice
+			.Skip(end + 1)
+			.Take(replaceSlice.Count)
+			.Zip(((IEnumerable<int>)replaceSlice).Reverse()))
+		{
+			Assert.AreEqual(listValue, sliceValue);
+		}
+
+		foreach (var (listValue, sliceValue) in list
+			.TakeLast(list.Count - start - 1)
+			.Zip(slice.TakeLast(list.Count - start - 1)))
+		{
+			Assert.AreEqual(listValue, sliceValue);
+		}
+	}
+
+	[TestMethod]
 	public void IndexerSet_EmptySlice_Insert()
 	{
 		var list = GetTestList();
@@ -155,7 +216,7 @@ public class SliceListTests
 		slice[start..end] = replaceSlice;
 		Console.WriteLine($"after: {{ {string.Join(", ", slice)} }}");
 
-		Assert.AreEqual(list.Count - (end - start) + replaceSlice.Count, slice.Count);
+		Assert.AreEqual(list.Count - Math.Abs(end - start) + replaceSlice.Count, slice.Count);
 
 		foreach (var (listValue, sliceValue) in list
 			.Take(start)
@@ -194,13 +255,24 @@ public class SliceListTests
 			end = Random.Shared.Next(0, list.Count);
 		}
 
+		if (start > end)
+		{
+			(start, end) = (end, start);
+		}
+
 		var slice = new SliceList<int>(list);
 		Console.WriteLine($"slice: [{start}..{end}]");
 		Console.WriteLine($"before: {{ {string.Join(", ", slice)} }}");
 		slice[start..end] = replaceSlice!;
 		Console.WriteLine($"after: {{ {string.Join(", ", slice)} }}");
 
-		Assert.AreEqual(list.Count - (end - start), slice.Count);
+		Assert.AreEqual(list.Count - Math.Abs(end - start), slice.Count);
+
+		if (start > end)
+		{
+			start++;
+			end++;
+		}
 
 		foreach (var (listValue, sliceValue) in list
 			.Take(start)
@@ -231,13 +303,18 @@ public class SliceListTests
 			end = Random.Shared.Next(0, list.Count);
 		}
 
+		if (start > end)
+		{
+			(start, end) = (end, start);
+		}
+
 		var slice = new SliceList<int>(list);
 		Console.WriteLine($"slice: [{start}..{end}]");
 		Console.WriteLine($"before: {{ {string.Join(", ", slice)} }}");
 		slice[start..end] = replaceSlice;
 		Console.WriteLine($"after: {{ {string.Join(", ", slice)} }}");
 
-		Assert.AreEqual(list.Count - (end - start) + replaceSlice.Count, slice.Count);
+		Assert.AreEqual(list.Count - Math.Abs(end - start) + replaceSlice.Count, slice.Count);
 
 		foreach (var (listValue, sliceValue) in list
 			.Take(start)
