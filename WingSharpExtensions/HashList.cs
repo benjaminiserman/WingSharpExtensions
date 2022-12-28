@@ -22,8 +22,8 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 	}
 
 	public T this[int index]
-	{ 
-		get => _internalList[index]; 
+	{
+		get => _internalList[index];
 		set
 		{
 			_internalSet.Remove(_internalList[index]);
@@ -35,7 +35,7 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 
 	public int Count => _internalList.Count;
 
-	public bool IsReadOnly => ((ICollection<T>)_internalList).IsReadOnly 
+	public bool IsReadOnly => ((ICollection<T>)_internalList).IsReadOnly
 		&& ((ICollection<T>)_internalSet).IsReadOnly;
 
 	/// <summary>

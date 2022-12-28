@@ -7,8 +7,8 @@ using System.Linq;
 public static class LazyDictionaryExtension
 {
 	public static LazyDictionary<TKey, TElement> ToLazyDictionary<TKey, TElement>(
-		this IEnumerable<KeyValuePair<TKey, TElement>> enumerable) 
-		where TKey : notnull 
+		this IEnumerable<KeyValuePair<TKey, TElement>> enumerable)
+		where TKey : notnull
 		=> new(enumerable);
 
 	public static LazyDictionary<TKey, TElement> ToLazyDictionary<TSource, TKey, TElement>(
@@ -16,7 +16,7 @@ public static class LazyDictionaryExtension
 		Func<TSource, TKey> keySelector,
 		Func<TSource, TElement> elementSelector,
 		IEqualityComparer<TKey> comparer)
-		where TKey : notnull 
+		where TKey : notnull
 		=> new(enumerable.ToDictionary(keySelector, elementSelector, comparer));
 
 	public static LazyDictionary<TKey, TElement> ToLazyDictionary<TSource, TKey, TElement>(

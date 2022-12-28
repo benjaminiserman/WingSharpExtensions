@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement>, IEnumerable<KeyValuePair<TKey, TElement>>
 	where TKey : notnull
@@ -64,7 +63,7 @@ public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement>, IEnum
 	public ICollection<TElement> Values => _internalDictionary.Values;
 	public int Count => _internalDictionary.Count;
 	public bool IsReadOnly => false;
-	
+
 	public void Add(TKey key, TElement value) => this[key] = value;
 	void ICollection<KeyValuePair<TKey, TElement>>.Add(KeyValuePair<TKey, TElement> item) => ((ICollection<KeyValuePair<TKey, TElement>>)_internalDictionary).Add(item);
 	public void Clear() => _internalDictionary.Clear();
