@@ -5,15 +5,34 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-///<summary>Represents a <see cref="List{T}"/> of unique values that utilizes a <see cref="HashSet{T}"/> for efficient searching.</summary>
+/// <summary>Represents a <see cref="List{T}"/> of unique values that utilizes a <see cref="HashSet{T}"/> for efficient searching.</summary>
 public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, IReadOnlySet<T>, IEnumerable<T>
 {
-	private readonly List<T> _internalList = new();
-	private readonly HashSet<T> _internalSet = new();
+	private readonly List<T> _internalList;
+	private readonly HashSet<T> _internalSet;
 
-	public HashList() { }
+	/// <summary>Creates a <see cref="HashList{T}"/> with the default <see cref="List{T}"/> and <see cref="HashSet{T}"/> capacities.</summary>
+	public HashList()
+	{
+		_internalList = new List<T>();
+		_internalSet = new HashSet<T>();
+	}
+
+	/// <summary>Creates a <see cref="HashList{T}"/> and sets the starting capacities for the <see cref="List{T}"/> and <see cref="HashSet{T}"/>.</summary>
+	/// <param name="capacity">The number of elements the <see cref="HashList{T}"/> can initially store.</param>
+	public HashList(int capacity)
+	{
+		_internalList = new List<T>(capacity);
+		_internalSet = new HashSet<T>(capacity);
+	}
+
+	/// <summary>Creates a <see cref="HashList{T}"/> that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.</summary>
+	/// <param name="items">The collection whose elements are copied to the new <see cref="HashList{T}"/></param>
 	public HashList(IEnumerable<T> items)
 	{
+		_internalList = new List<T>();
+		_internalSet = new HashSet<T>();
+		
 		foreach (var item in items)
 		{
 			if (!_internalSet.Contains(item))
@@ -41,14 +60,17 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 		}
 	}
 
+	/// <summary>Gets the number of elements contained in the <see cref="HashList{T}"/>.</summary>
 	public int Count => _internalList.Count;
 
+	/// <summary>Gets a value indicating whether the <see cref="HashList{T}"/> is read-only.</summary>
 	public bool IsReadOnly => ((ICollection<T>)_internalList).IsReadOnly && ((ICollection<T>)_internalSet).IsReadOnly;
 
 	/// <summary>Adds an object to the end of the List in the <see cref="HashList{T}"/>, if that item is not already within the List.</summary>
 	/// <param name="item">The object to be added to the end of the <see cref="HashList{T}"/>. The value can be null for reference types.</param>
 	void ICollection<T>.Add(T item) => Add(item);
 
+	/// <summary>Clears the <see cref="List{T}"/> and <see cref="HashSet{T}"/> of the <see cref="HashList{T}"/>.</summary>
 	public void Clear()
 	{
 		_internalList.Clear();
@@ -96,9 +118,7 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 		return false;
 	}
 	
-	/// <summary>
-	/// Attempts to set an item in the <see cref="HashList{T}"/> at the specified index.
-	/// </summary>
+	/// <summary>Attempts to set an item in the <see cref="HashList{T}"/> at the specified index.</summary>
 	/// <param name="index">The zero-based index that should be set to the item.</param>
 	/// <param name="item">The object to insert. The value can be null for reference types.</param>
 	/// <returns><see langword="true"/> if the item is set into the <see cref="HashList{T}"/>; <see langword="false"/> if the item is already in the <see cref="HashList{T}"/>.</returns>
