@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+///<summary>Represents a <see cref="List{T}"/> of unique values that utilizes a <see cref="HashSet{T}"/> for efficient searching.</summary>
 public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, IReadOnlySet<T>, IEnumerable<T>
 {
 	private readonly List<T> _internalList = new();
@@ -42,12 +43,9 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 
 	public int Count => _internalList.Count;
 
-	public bool IsReadOnly => ((ICollection<T>)_internalList).IsReadOnly
-		&& ((ICollection<T>)_internalSet).IsReadOnly;
+	public bool IsReadOnly => ((ICollection<T>)_internalList).IsReadOnly && ((ICollection<T>)_internalSet).IsReadOnly;
 
-	/// <summary>
-	/// Adds an object to the end of the <see cref="HashList{T}"/>, if that item is not already within the list.
-	/// </summary>
+	/// <summary>Adds an object to the end of the List in the <see cref="HashList{T}"/>, if that item is not already within the List.</summary>
 	/// <param name="item">The object to be added to the end of the <see cref="HashList{T}"/>. The value can be null for reference types.</param>
 	void ICollection<T>.Add(T item) => Add(item);
 
@@ -57,15 +55,20 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 		_internalSet.Clear();
 	}
 
+	/// <summary>Determines whether the <see cref="HashList{T}"/> contains a specific value.</summary>
+	/// <param name="item">The item to search for.</param>
+	/// <returns><see langword="true"/> if the <see cref="HashList{T}"/> contains the value; <see langword="false"/> if the item is not in the <see cref="HashList{T}"/>.</returns>
 	public bool Contains(T item) => _internalSet.Contains(item);
 	public void CopyTo(T[] array, int arrayIndex) => _internalList.CopyTo(array, arrayIndex);
 	public IEnumerator<T> GetEnumerator() => _internalList.GetEnumerator();
 	IEnumerator IEnumerable.GetEnumerator() => _internalList.GetEnumerator();
+	
+	/// <summary>Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="HashList{T}"/>'s List.</summary>
+	/// <param name="item">The item to search for. The value can be null for reference types.</param>
+	/// <returns>The zero-based index of the first occurrence of item within the entire <see cref="HashList{T}"/>'s List, if found; otherwise, -1.</returns>
 	public int IndexOf(T item) => _internalList.IndexOf(item);
 
-	/// <summary>
-	/// Inserts an item to the <see cref="HashList{T}"/> at the specified index, if that item is not already within the list.
-	/// </summary>
+	/// <summary>Inserts an item in the <see cref="HashList{T}"/> at the specified index, if that item is not already within the HashList.</summary>
 	/// <param name="index">The zero-based index at which the item should be inserted.</param>
 	/// <param name="item">The object to insert. The value can be null for reference types.</param>
 	public void Insert(int index, T item)
@@ -77,9 +80,7 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 		}
 	}
 
-	/// <summary>
-	/// Attempts to insert an item to the <see cref="HashList{T}"/> at the specified index.
-	/// </summary>
+	/// <summary>Attempts to insert an item in the <see cref="HashList{T}"/> at the specified index.</summary>
 	/// <param name="index">The zero-based index at which the item should be inserted.</param>
 	/// <param name="item">The object to insert. The value can be null for reference types.</param>
 	/// <returns><see langword="true"/> if the item is added to the <see cref="HashList{T}"/>; <see langword="false"/> if the item is already in the <see cref="HashList{T}"/>.</returns>
@@ -94,7 +95,7 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 
 		return false;
 	}
-
+	
 	/// <summary>
 	/// Attempts to set an item in the <see cref="HashList{T}"/> at the specified index.
 	/// </summary>
@@ -112,18 +113,26 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 		return false;
 	}
 
+	/// <summary>Attempts to remove an item from the <see cref="HashList{T}"/>.</summary>
+	/// <param name="item">The object to remove. The value can be null for reference types.</param>
+	/// <returns><see langword="true"/> if the item is removed from the <see cref="HashList{T}"/>, false otherwise.</returns>
 	public bool Remove(T item)
 	{
 		_internalList.Remove(item);
 		return _internalSet.Remove(item);
 	}
-
+	
+	/// <summary>Attempts to remove an item from the <see cref="HashList{T}"/> at the specified index.</summary>
+	/// <param name="index">The zero-based index at which the item should be removed.</param>
 	public void RemoveAt(int index)
 	{
 		_internalSet.Remove(_internalList[index]);
 		_internalList.RemoveAt(index);
 	}
 
+	/// <summary>Attempts to insert an item at the end of the <see cref="HashList{T}"/>'s List.</summary>
+	/// <param name="item">The object to insert. The value can be null for reference types.</param>
+	/// <returns><see langword="true"/> if the item is added to the <see cref="HashList{T}"/>; <see langword="false"/> if the item is already in the <see cref="HashList{T}"/>.</returns>
 	public bool Add(T item)
 	{
 		if (!_internalSet.Contains(item))
@@ -135,11 +144,13 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 
 		return false;
 	}
+	
 	public void ExceptWith(IEnumerable<T> other)
 	{
 		_internalSet.ExceptWith(other);
 		_internalList.RemoveAll(x => !_internalSet.Contains(x));
 	}
+	
 	public void IntersectWith(IEnumerable<T> other)
 	{
 		_internalSet.IntersectWith(other);
