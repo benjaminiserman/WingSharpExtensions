@@ -96,6 +96,23 @@ public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, 
 		return false;
 	}
 	
+	/// <summary>
+	/// Attempts to set an item in the <see cref="HashList{T}"/> at the specified index.
+	/// </summary>
+	/// <param name="index">The zero-based index that should be set to the item.</param>
+	/// <param name="item">The object to insert. The value can be null for reference types.</param>
+	/// <returns><see langword="true"/> if the item is set into the <see cref="HashList{T}"/>; <see langword="false"/> if the item is already in the <see cref="HashList{T}"/>.</returns>
+	public bool TrySet(int index, T item)
+	{
+		if (!_internalSet.Contains(item))
+		{
+			this[index] = item;
+			return true;
+		}
+
+		return false;
+	}
+
 	/// <summary>Attempts to remove an item from the <see cref="HashList{T}"/>.</summary>
 	/// <param name="item">The object to remove. The value can be null for reference types.</param>
 	/// <returns><see langword="true"/> if the item is removed from the <see cref="HashList{T}"/>, false otherwise.</returns>

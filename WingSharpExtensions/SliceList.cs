@@ -27,7 +27,7 @@ public class SliceList<T> : List<T>, IEnumerable<T>
 			var start = r.Start.Value;
 			var end = r.End.Value;
 
-			if (Math.Max(start, end) < 0 
+			if (Math.Max(start, end) < 0
 				|| Math.Min(start, end) >= this.Count
 				|| start <= -1
 				|| end <= -1
@@ -85,7 +85,7 @@ public class SliceList<T> : List<T>, IEnumerable<T>
 				list.AddRange(this.TakeLast(this.Count - start - 1));
 			}
 
-			
+
 
 			this.Clear();
 			this.AddRange(list);
