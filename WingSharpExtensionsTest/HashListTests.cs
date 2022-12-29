@@ -136,7 +136,7 @@ public class HashListTests
 		{
 			var index = Random.Shared.Next(0, list.Count);
 			var number = Random.Shared.Next(0, 100);
-			
+
 			hashlistResults.Add(hashlist.TrySet(index, number));
 
 			if (set.Contains(number))

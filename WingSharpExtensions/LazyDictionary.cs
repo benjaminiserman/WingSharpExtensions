@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement>, IEnumerable<KeyValuePair<TKey, TElement>>
 	where TKey : notnull
