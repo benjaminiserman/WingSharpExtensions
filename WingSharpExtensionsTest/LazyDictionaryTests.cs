@@ -2,7 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WingSharpExtensions;
 
@@ -228,6 +230,28 @@ public class LazyDictionaryTests
 		Assert.AreEqual(dictionary.TryGetValue(key, out var dictionaryValue), lazyDictionary.TryGetValue(key, out var lazyDictionaryValue));
 		Assert.AreEqual(dictionaryValue, lazyDictionaryValue);
 	}
+
+	[TestMethod]
+	public void Keys_SameAsDictionary()
+	{
+		GetTestDictionaries(out var dictionary, out var lazyDictionary);
+
+		var unmatchedKeys = dictionary.Keys.ToHashSet();
+		unmatchedKeys.SymmetricExceptWith(lazyDictionary.Keys.ToHashSet());
+
+		Assert.AreEqual(0, unmatchedKeys.Count);
+	}
+
+	[TestMethod]
+	public void Values_SameAsDictionary()
+	{
+		GetTestDictionaries(out var dictionary, out var lazyDictionary);
+
+		var unmatchedValues = dictionary.Values.ToHashSet();
+		unmatchedValues.SymmetricExceptWith(lazyDictionary.Values.ToHashSet());
+
+		Assert.AreEqual(0, unmatchedValues.Count);
+	}
 	#endregion
 
 	#region ExtensionMethods
@@ -292,6 +316,63 @@ public class LazyDictionaryTests
 
 		var dictionary = enumerable.ToDictionary(keySelector, elementSelector, comparer);
 		var lazyDictionary = enumerable.ToLazyDictionary(keySelector, elementSelector, comparer);
+
+		AssertDictionariesAreEqual(dictionary, lazyDictionary);
+	}
+	#endregion
+
+	#region InterfaceOnly
+	[TestMethod]
+	public void ICollectionContains_SameAsDictionary()
+	{
+		GetTestDictionaries(out var dictionary, out var lazyDictionary);
+		var exampleKey = dictionary.Keys.First();
+
+		var trueKvp = KeyValuePair.Create(exampleKey, dictionary[exampleKey]);
+		var falseKvp = KeyValuePair.Create("this is def not in the dictionary", -1);
+
+		Assert.IsFalse(dictionary.ContainsKey(falseKvp.Key));
+
+		Assert.AreEqual(((ICollection<KeyValuePair<string, int>>)dictionary).Contains(trueKvp),
+			((ICollection<KeyValuePair<string, int>>)lazyDictionary).Contains(trueKvp));
+
+		Assert.AreEqual(((ICollection<KeyValuePair<string, int>>)dictionary).Contains(falseKvp),
+			((ICollection<KeyValuePair<string, int>>)lazyDictionary).Contains(falseKvp));
+	}
+
+	[TestMethod]
+	public void ICollectionCopyTo_SameAsDictionary()
+	{
+		GetTestDictionaries(out var dictionary, out var lazyDictionary);
+		var dictionaryArray = new KeyValuePair<string, int>[dictionary.Count];
+		var lazyDictionaryArray = new KeyValuePair<string, int>[lazyDictionary.Count];
+
+		((ICollection<KeyValuePair<string, int>>)dictionary).CopyTo(dictionaryArray, 0);
+		((ICollection<KeyValuePair<string, int>>)lazyDictionary).CopyTo(lazyDictionaryArray, 0);
+
+		Assert.AreEqual(dictionaryArray.Length, lazyDictionaryArray.Length);
+		foreach (var (dictionaryValue, lazyDictionaryValue) in dictionary.Zip(lazyDictionaryArray))
+		{
+			Assert.AreEqual(dictionaryValue, lazyDictionaryValue);
+		}
+	}
+
+	[TestMethod]
+	public void ICollectionRemove_SameAsDictionary()
+	{
+		GetTestDictionaries(out var dictionary, out var lazyDictionary);
+		var exampleKey = dictionary.Keys.First();
+
+		var trueKvp = KeyValuePair.Create(exampleKey, dictionary[exampleKey]);
+		var falseKvp = KeyValuePair.Create("this is def not in the dictionary", -1);
+
+		Assert.IsFalse(dictionary.ContainsKey(falseKvp.Key));
+
+		Assert.AreEqual(((ICollection<KeyValuePair<string, int>>)dictionary).Remove(trueKvp),
+			((ICollection<KeyValuePair<string, int>>)lazyDictionary).Remove(trueKvp));
+
+		Assert.AreEqual(((ICollection<KeyValuePair<string, int>>)dictionary).Remove(falseKvp),
+			((ICollection<KeyValuePair<string, int>>)lazyDictionary).Remove(falseKvp));
 
 		AssertDictionariesAreEqual(dictionary, lazyDictionary);
 	}

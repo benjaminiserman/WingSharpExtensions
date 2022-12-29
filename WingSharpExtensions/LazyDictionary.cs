@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement>, IEnumerable<KeyValuePair<TKey, TElement>>
 	where TKey : notnull
@@ -74,7 +75,8 @@ public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement>, IEnum
 	public bool Remove(TKey key, out TElement value) => _internalDictionary.Remove(key, out value!);
 
 	public bool TryGetValue(TKey key, out TElement value) => _internalDictionary.TryGetValue(key, out value!);
-	public bool Contains(KeyValuePair<TKey, TElement> item) => ((ICollection<KeyValuePair<TKey, TElement>>)_internalDictionary).Contains(item);
-	public void CopyTo(KeyValuePair<TKey, TElement>[] array, int arrayIndex) => ((ICollection<KeyValuePair<TKey, TElement>>)_internalDictionary).CopyTo(array, arrayIndex);
-	public bool Remove(KeyValuePair<TKey, TElement> item) => ((ICollection<KeyValuePair<TKey, TElement>>)_internalDictionary).Remove(item);
+
+	bool ICollection<KeyValuePair<TKey, TElement>>.Contains(KeyValuePair<TKey, TElement> item) => ((ICollection<KeyValuePair<TKey, TElement>>)_internalDictionary).Contains(item);
+	void ICollection<KeyValuePair<TKey, TElement>>.CopyTo(KeyValuePair<TKey, TElement>[] array, int arrayIndex) => ((ICollection<KeyValuePair<TKey, TElement>>)_internalDictionary).CopyTo(array, arrayIndex);
+	bool ICollection<KeyValuePair<TKey, TElement>>.Remove(KeyValuePair<TKey, TElement> item) => ((ICollection<KeyValuePair<TKey, TElement>>)_internalDictionary).Remove(item);
 }
