@@ -8,12 +8,31 @@ using System.Linq;
 ///<summary>Represents a <see cref="List{T}"/> of unique values that utilizes a <see cref="HashSet{T}"/> for efficient searching.</summary>
 public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, IReadOnlySet<T>, IEnumerable<T>
 {
-	private readonly List<T> _internalList = new();
-	private readonly HashSet<T> _internalSet = new();
+	private readonly List<T> _internalList;
+	private readonly HashSet<T> _internalSet;
 
-	public HashList() { }
+	/// <summary>Creates a <see cref="HashList{T}"/> with the default <see cref="List{T}"/> and <see cref="HashSet{T}"/> capacities.</summary>
+	public HashList()
+	{
+		_internalList = new List<T>();
+		_internalSet = new HashSet<T>();
+	}
+
+	/// <summary>Creates a <see cref="HashList{T}"/> and sets the starting capacities for the <see cref="List{T}"/> and <see cref="HashSet{T}"/>.</summary>
+	/// <param name="capacity">The number of elements the <see cref="HashList{T}"/> can initially store.</param>
+	public HashList(int capacity)
+	{
+		_internalList = new List<T>(capacity);
+		_internalSet = new HashSet<T>(capacity);
+	}
+
+	/// <summary>Creates a <see cref="HashList{T}"/> that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.</summary>
+	/// <param name="items">The collection whose elements are copied to the new <see cref="HashList{T}"/></param>
 	public HashList(IEnumerable<T> items)
 	{
+		_internalList = new List<T>();
+		_internalSet = new HashSet<T>();
+		
 		foreach (var item in items)
 		{
 			if (!_internalSet.Contains(item))
