@@ -1,4 +1,4 @@
-﻿namespace WingSharpExtensions;
+namespace WingSharpExtensions;
 
 using System;
 using System.Collections;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>Represents a <see cref="List{T}"/> of unique values that utilizes a <see cref="HashSet{T}"/> for efficient searching.</summary>
-public class HashList<T> : IList<T>, ISet<T>, ICollection<T>, IReadOnlyList<T>, IReadOnlySet<T>, IEnumerable<T>
+public class HashList<T> : IList<T>, ISet<T>, IReadOnlyList<T>, IReadOnlySet<T>
 {
 	private readonly List<T> _internalList;
 	private readonly HashSet<T> _internalSet;
