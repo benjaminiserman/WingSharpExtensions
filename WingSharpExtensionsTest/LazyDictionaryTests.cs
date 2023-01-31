@@ -29,7 +29,7 @@ public class LazyDictionaryTests
 		}
 	}
 
-	private void GetTestDictionaries(out Dictionary<string, int> dictionary, out LazyDictionary<string, int> lazyDictionary, Func<int> getDefault = null!, bool addMissingKeys = false)
+	private void GetTestDictionaries(out Dictionary<string, int> dictionary, out LazyDictionary<string, int> lazyDictionary, Func<string, int> getDefault = null!, bool addMissingKeys = false)
 	{
 		dictionary = Enumerable.Range(0, 10).ToDictionary(x => x.ToString(), x => x);
 		lazyDictionary = new(dictionary)
@@ -53,10 +53,10 @@ public class LazyDictionaryTests
 	public void IndexerGet_KeyDoesNotExistWithGetDefaultSet_Default()
 	{
 		var key = "15";
-		var getDefault = () => 10;
+		Func<string, int> getDefault = _ => 10;
 		GetTestDictionaries(out _, out var lazyDictionary, getDefault);
 
-		Assert.AreEqual(getDefault(), lazyDictionary[key]);
+		Assert.AreEqual(getDefault(key), lazyDictionary[key]);
 		Assert.IsFalse(lazyDictionary.ContainsKey(key));
 	}
 
@@ -64,12 +64,12 @@ public class LazyDictionaryTests
 	public void IndexerGet_KeyDoesNotExistWithGetDefaultSetAndAddMissingKeys_Default()
 	{
 		var key = "15";
-		var getDefault = () => 10;
+		Func<string, int> getDefault = int.Parse;
 		GetTestDictionaries(out _, out var lazyDictionary, getDefault, true);
 
-		Assert.AreEqual(getDefault(), lazyDictionary[key]);
+		Assert.AreEqual(getDefault(key), lazyDictionary[key]);
 		Assert.IsTrue(lazyDictionary.ContainsKey(key));
-		Assert.AreEqual(getDefault(), lazyDictionary[key]); // check again to make sure it was set correctly
+		Assert.AreEqual(getDefault(key), lazyDictionary[key]); // check again to make sure it was set correctly
 	}
 
 	[TestMethod]
@@ -111,7 +111,7 @@ public class LazyDictionaryTests
 	{
 		var lazyDictionary = new LazyDictionary<int, List<int>>()
 		{
-			GetDefault = () => new(),
+			GetDefault = _ => new(),
 			AddMissingKeys = true,
 		};
 

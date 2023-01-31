@@ -9,7 +9,7 @@ public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement>, IEnum
 {
 	private readonly Dictionary<TKey, TElement> _internalDictionary;
 
-	public Func<TElement>? GetDefault { get; init; } = null;
+	public Func<TKey, TElement>? GetDefault { get; init; } = null;
 	public bool AddMissingKeys { get; init; } = false;
 	public IEqualityComparer<TKey> Comparer => _internalDictionary.Comparer;
 
@@ -39,7 +39,7 @@ public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement>, IEnum
 				}
 				else
 				{
-					var newValue = GetDefault();
+					var newValue = GetDefault(key);
 					if (AddMissingKeys)
 					{
 						_internalDictionary.Add(key, newValue);
