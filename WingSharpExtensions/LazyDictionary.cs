@@ -35,6 +35,11 @@ public class LazyDictionary<TKey, TElement> : IDictionary<TKey, TElement>, IEnum
 			{
 				if (GetDefault is null)
 				{
+					if (AddMissingKeys)
+					{
+						_internalDictionary.Add(key, default!);
+					}
+
 					return default!;
 				}
 				else
