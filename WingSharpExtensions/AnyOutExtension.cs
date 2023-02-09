@@ -8,16 +8,14 @@ public static class AnyOutExtension
 {
 	public static bool AnyOut<T>(this IEnumerable<T> enumerable, out T found)
 	{
-		if (enumerable.Any())
+		foreach (var item in enumerable)
 		{
-			found = enumerable.First();
+			found = item;
 			return true;
 		}
-		else
-		{
-			found = default!;
-			return false;
-		}
+
+		found = default!;
+		return false;
 	}
 
 	public static bool AnyOut<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T found)
