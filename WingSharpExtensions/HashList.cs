@@ -32,7 +32,7 @@ public class HashList<T> : IList<T>, ISet<T>, IReadOnlyList<T>, IReadOnlySet<T>
 	{
 		_internalList = new List<T>();
 		_internalSet = new HashSet<T>();
-		
+
 		foreach (var item in items)
 		{
 			if (!_internalSet.Contains(item))
@@ -84,7 +84,7 @@ public class HashList<T> : IList<T>, ISet<T>, IReadOnlyList<T>, IReadOnlySet<T>
 	public void CopyTo(T[] array, int arrayIndex) => _internalList.CopyTo(array, arrayIndex);
 	public IEnumerator<T> GetEnumerator() => _internalList.GetEnumerator();
 	IEnumerator IEnumerable.GetEnumerator() => _internalList.GetEnumerator();
-	
+
 	/// <summary>Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="HashList{T}"/>'s List.</summary>
 	/// <param name="item">The item to search for. The value can be null for reference types.</param>
 	/// <returns>The zero-based index of the first occurrence of item within the entire <see cref="HashList{T}"/>'s List, if found; otherwise, -1.</returns>
@@ -117,7 +117,7 @@ public class HashList<T> : IList<T>, ISet<T>, IReadOnlyList<T>, IReadOnlySet<T>
 
 		return false;
 	}
-	
+
 	/// <summary>Attempts to set an item in the <see cref="HashList{T}"/> at the specified index.</summary>
 	/// <param name="index">The zero-based index that should be set to the item.</param>
 	/// <param name="item">The object to insert. The value can be null for reference types.</param>
@@ -141,7 +141,7 @@ public class HashList<T> : IList<T>, ISet<T>, IReadOnlyList<T>, IReadOnlySet<T>
 		_internalList.Remove(item);
 		return _internalSet.Remove(item);
 	}
-	
+
 	/// <summary>Attempts to remove an item from the <see cref="HashList{T}"/> at the specified index.</summary>
 	/// <param name="index">The zero-based index at which the item should be removed.</param>
 	public void RemoveAt(int index)
@@ -164,13 +164,13 @@ public class HashList<T> : IList<T>, ISet<T>, IReadOnlyList<T>, IReadOnlySet<T>
 
 		return false;
 	}
-	
+
 	public void ExceptWith(IEnumerable<T> other)
 	{
 		_internalSet.ExceptWith(other);
 		_internalList.RemoveAll(x => !_internalSet.Contains(x));
 	}
-	
+
 	public void IntersectWith(IEnumerable<T> other)
 	{
 		_internalSet.IntersectWith(other);

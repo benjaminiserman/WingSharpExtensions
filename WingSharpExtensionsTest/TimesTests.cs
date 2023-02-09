@@ -1,7 +1,6 @@
 ﻿namespace WingSharpExtensionsTest;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WingSharpExtensions;
@@ -75,11 +74,11 @@ public class TimesTests
 	public void TimesIndex_Factorial_CorrectResult(int n)
 	{
 		var count = 1;
-		Action<int> function = x => count *= (x + 1);
+		Action<int> function = x => count *= x + 1;
 		function.Times(n);
 
 		var factorial = 1;
-		for (var i = 2; i <= n; i++) 
+		for (var i = 2; i <= n; i++)
 		{
 			factorial *= i;
 		}
