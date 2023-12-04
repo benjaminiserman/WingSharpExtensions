@@ -231,7 +231,9 @@ public class AStarTests
 			heuristic: node => node.boardState.Time + Math.Abs(target.x - node.pos.x) + Math.Abs(target.y - node.pos.y),
 			distance: (_, _) => 1,
 			neighbors: Neighbors,
-			searchExhaustively: true);
+			searchExhaustively: false);
+
+		Console.WriteLine($"Explored: {aStar.NodesExplored}");
 
 		Assert.AreEqual(299, result.distance);
 	}

@@ -15,6 +15,8 @@ public class AStar<T>
 
 	public (List<T> nodes, double distance) BestPathThusFar;
 
+	public int NodesExplored;
+
 	public AStar()
 	{
 		Clear();
@@ -36,6 +38,7 @@ public class AStar<T>
 		};
 
 		BestPathThusFar = (new(), double.PositiveInfinity);
+		NodesExplored = 0;
 	}
 
 	public (List<T> nodes, double distance) ReconstructPath(T current)
@@ -87,6 +90,8 @@ public class AStar<T>
 			{
 				continue;
 			}
+
+			NodesExplored++;
 
 			foreach (var neighbor in neighbors(current))
 			{
