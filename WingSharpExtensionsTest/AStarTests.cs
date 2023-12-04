@@ -196,31 +196,31 @@ public class AStarTests
 			var currentState = GetBoardState(node.boardState.Time + 1);
 
 			if (openTiles.Contains((x + 1, y))
-					&& !currentState.BlizzardPositions.Contains((x + 1, y)))
+				&& !currentState.BlizzardPositions.Contains((x + 1, y)))
 			{
 				yield return new Node((x + 1, y), currentState);
 			}
 
 			if (openTiles.Contains((x, y + 1))
-					&& !currentState.BlizzardPositions.Contains((x, y + 1)))
+				&& !currentState.BlizzardPositions.Contains((x, y + 1)))
 			{
 				yield return new Node((x, y + 1), currentState);
 			}
 
 			if (openTiles.Contains((x - 1, y))
-					&& !currentState.BlizzardPositions.Contains((x - 1, y)))
+				&& !currentState.BlizzardPositions.Contains((x - 1, y)))
 			{
 				yield return new Node((x - 1, y), currentState);
 			}
 
 			if (openTiles.Contains((x, y - 1))
-					&& !currentState.BlizzardPositions.Contains((x, y - 1)))
+				&& !currentState.BlizzardPositions.Contains((x, y - 1)))
 			{
 				yield return new Node((x, y - 1), currentState);
 			}
 
 			if (openTiles.Contains((x, y))
-					&& !currentState.BlizzardPositions.Contains((x, y)))
+				&& !currentState.BlizzardPositions.Contains((x, y)))
 			{
 				yield return new Node((x, y), currentState);
 			}
