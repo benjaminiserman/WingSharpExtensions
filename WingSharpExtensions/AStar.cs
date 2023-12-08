@@ -7,7 +7,7 @@ public class AStar<T>
 	where T : notnull
 {
 	public PriorityQueue<T, double> OpenQueue;
-	public HashSet<T> OpenSet;
+	public Dictionary<T, double> OpenSet;
 	public Dictionary<T, T> CameFrom;
 
 	public LazyDictionary<T, double> BestPathTo;
@@ -25,7 +25,7 @@ public class AStar<T>
 	public void Clear()
 	{
 		OpenQueue = new PriorityQueue<T, double>();
-		OpenSet = new HashSet<T>();
+		OpenSet = new Dictionary<T, double>();
 		CameFrom = new Dictionary<T, T>();
 
 		BestPathTo = new LazyDictionary<T, double>()
@@ -45,10 +45,17 @@ public class AStar<T>
 	{
 		var totalDistance = BestPathTo[current];
 		var path = new List<T>() { current };
+		var set = new HashSet<T>() { current };
 		while (CameFrom.ContainsKey(current))
 		{
 			current = CameFrom[current];
+			if (set.Contains(current))
+			{
+				break;
+			}
+
 			path.Add(current);
+			set.Add(current);
 		}
 
 		path.Reverse();
@@ -56,21 +63,50 @@ public class AStar<T>
 		return (path, totalDistance);
 	}
 
+	public bool SearchPathFor(T current, T target)
+	{
+		while (true)
+		{
+			if (current.Equals(target))
+			{
+				return true;
+			}
+
+			if (CameFrom.TryGetValue(current, out var next))
+			{
+				current = next;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+
+	public Func<T, bool> DefaultCutoff => current => BestPathTo[current] > BestPathThusFar.distance;
+
 	public (List<T> nodes, double distance) Path(
 		T start, 
 		Func<T, bool> goal, 
 		Func<T, double> heuristic, 
 		Func<T, T, double> distance,
 		Func<T, IEnumerable<T>> neighbors,
-		bool searchExhaustively = false)
+		bool searchExhaustively = false,
+		Func<T, bool>? cutoff = null)
 	{
-		OpenSet.Add(start);
-		OpenQueue.Enqueue(start, heuristic(start));
+		var heuristicResult = heuristic(start);
+		OpenSet.Add(start, heuristicResult);
+		OpenQueue.Enqueue(start, heuristicResult);
 		BestPathTo[start] = 0;
-		DistanceFromGoalEstimate[start] = heuristic(start);
+		DistanceFromGoalEstimate[start] = heuristicResult;
 
-		while (OpenQueue.TryDequeue(out var current, out _))
+		while (OpenQueue.TryDequeue(out var current, out var gotPriority))
 		{
+			if (gotPriority > DistanceFromGoalEstimate[current])
+			{
+				continue;
+			}
+
 			if (goal(current))
 			{
 				var path = ReconstructPath(current);
@@ -86,7 +122,7 @@ public class AStar<T>
 				}
 			}
 
-			if (BestPathTo[current] > BestPathThusFar.distance)
+			if (cutoff is not null && cutoff(current))
 			{
 				continue;
 			}
@@ -98,12 +134,22 @@ public class AStar<T>
 				var distanceFromStart = BestPathTo[current] + distance(current, neighbor);
 				if (distanceFromStart < BestPathTo[neighbor])
 				{
+					if (CameFrom.TryGetValue(neighbor, out var previous) 
+						&& previous.Equals(current))
+					{
+						return (BestPathThusFar.nodes, double.NegativeInfinity);
+					}
+
+					//Console.WriteLine($"{current} => {neighbor}, {distanceFromStart}");
 					CameFrom[neighbor] = current;
 					BestPathTo[neighbor] = distanceFromStart;
 					DistanceFromGoalEstimate[neighbor] = distanceFromStart + heuristic(neighbor);
-					if (!OpenSet.Contains(neighbor))
+
+					if (!OpenSet.TryGetValue(neighbor, out var neighborPriority) 
+						|| neighborPriority > DistanceFromGoalEstimate[neighbor])
 					{
-						OpenSet.Add(neighbor);
+						//Console.WriteLine($"{neighbor}: {distanceFromStart}, nodes: {NodesExplored}, {DistanceFromGoalEstimate[neighbor]}");
+						OpenSet.Add(neighbor, DistanceFromGoalEstimate[neighbor]);
 						OpenQueue.Enqueue(neighbor, DistanceFromGoalEstimate[neighbor]);
 					}
 				}
