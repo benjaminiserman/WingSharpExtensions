@@ -7,7 +7,7 @@ public class AStar<T>
 	where T : notnull
 {
 	public PriorityQueue<T, double> OpenQueue;
-	public Dictionary<T, double> OpenSet;
+	public LazyDictionary<T, double> OpenSet;
 	public Dictionary<T, T> CameFrom;
 
 	public LazyDictionary<T, double> BestPathTo;
@@ -25,7 +25,7 @@ public class AStar<T>
 	public void Clear()
 	{
 		OpenQueue = new PriorityQueue<T, double>();
-		OpenSet = new Dictionary<T, double>();
+		OpenSet = new LazyDictionary<T, double>();
 		CameFrom = new Dictionary<T, T>();
 
 		BestPathTo = new LazyDictionary<T, double>()
@@ -95,7 +95,7 @@ public class AStar<T>
 		Func<T, bool>? cutoff = null)
 	{
 		var heuristicResult = heuristic(start);
-		OpenSet.Add(start, heuristicResult);
+		OpenSet[start] = heuristicResult;
 		OpenQueue.Enqueue(start, heuristicResult);
 		BestPathTo[start] = 0;
 		DistanceFromGoalEstimate[start] = heuristicResult;
@@ -149,7 +149,7 @@ public class AStar<T>
 						|| neighborPriority > DistanceFromGoalEstimate[neighbor])
 					{
 						//Console.WriteLine($"{neighbor}: {distanceFromStart}, nodes: {NodesExplored}, {DistanceFromGoalEstimate[neighbor]}");
-						OpenSet.Add(neighbor, DistanceFromGoalEstimate[neighbor]);
+						OpenSet[neighbor] = DistanceFromGoalEstimate[neighbor];
 						OpenQueue.Enqueue(neighbor, DistanceFromGoalEstimate[neighbor]);
 					}
 				}

@@ -7,7 +7,7 @@ using System.Numerics;
 
 public static class ExtraMath
 {
-	public static T GCD<T>(IEnumerable<T> numbers) where T : IBinaryInteger<T>
+	public static T GCD<T>(this IEnumerable<T> numbers) where T : IBinaryInteger<T>
 	{
 		return numbers.Aggregate(GCD);
 	}
@@ -19,10 +19,10 @@ public static class ExtraMath
 
 	public static T GCD<T>(T a, T b) where T : IBinaryInteger<T>
 	{
-		return b.Equals(0) ? a : GCD(b, a % b);
+		return b.Equals(T.Zero) ? a : GCD(b, a % b);
 	}
 
-	public static T LCM<T>(IEnumerable<T> numbers) where T : IBinaryInteger<T>
+	public static T LCM<T>(this IEnumerable<T> numbers) where T : IBinaryInteger<T>
 	{
 		var lcm = T.MultiplicativeIdentity;
 
@@ -52,6 +52,11 @@ public static class ExtraMath
 		}
 
 		return T.Abs(a * b / GCD(a, b));
+	}
+
+	public static T Product<T>(this IEnumerable<T> factors) where T : INumber<T>
+	{
+		return factors.Aggregate((a, b) => a * b);
 	}
 
 	public static T Factorial<T>(T n) where T : IBinaryInteger<T>

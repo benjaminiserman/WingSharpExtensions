@@ -33,7 +33,7 @@ public class ExtraMathTests
 		foreach (var trial in Enumerable.Range(1, 10))
 		{
 			var randomList = Enumerable.Repeat(1, trial).Select(_ => random.Next()).ToList();
-			Assert.AreEqual(GCD(randomList), GCD(randomList.ToArray()));
+			Assert.AreEqual(randomList.GCD(), GCD(randomList.ToArray()));
 		}
 	}
 
@@ -61,7 +61,7 @@ public class ExtraMathTests
 		foreach (var trial in Enumerable.Range(1, 10))
 		{
 			var randomList = Enumerable.Repeat(1, trial).Select(_ => random.Next()).ToList();
-			Assert.AreEqual(LCM(randomList), LCM(randomList.ToArray()));
+			Assert.AreEqual(randomList.LCM(), LCM(randomList.ToArray()));
 		}
 	}
 
@@ -108,5 +108,18 @@ public class ExtraMathTests
 		Assert.AreEqual(0, Comb(6, 8));
 		Assert.AreEqual(0, Comb(10, 100));
 		Assert.AreEqual(0, Comb(48, 74));
+	}
+
+	[TestMethod]
+	public void Product_CorrectResults()
+	{
+		Assert.AreEqual(720, new int[] { 1, 2, 3, 4, 5, 6 }.Product());
+		var random = new Random();
+		var testList = Enumerable
+			.Repeat(0, 10)
+			.Select(_ => (BigInteger)random.Next())
+			.ToList();
+
+		Assert.AreEqual(testList.Aggregate((a, b) => a * b), testList.Product());
 	}
 }
